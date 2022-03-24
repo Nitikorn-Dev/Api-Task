@@ -21,7 +21,7 @@ connect(dbUrl!)
     })
 
 
-TaskModel.find().then(res => console.log(res))
+// TaskModel.findOne({ title: 'T2' }).then(res => console.log(res))
 
 const config = {
     autoIndex: true,
