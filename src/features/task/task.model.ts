@@ -37,10 +37,10 @@ const taskSchema = new Schema<Task>({
         enum: TaskStatus,
         default: TaskStatus.TODO
     },
-    comments: {
-        type: [Schema.Types.ObjectId],
-        ref: "Comment"
-    },
+    // comments: {
+    //     type: [Schema.Types.ObjectId],
+    //     ref: "Comment"
+    // },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: "User"

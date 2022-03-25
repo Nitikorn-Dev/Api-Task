@@ -10,9 +10,13 @@ const singInOptions: SignOptions = {
 }
 
 namespace AuthService {
-    export const generateJWT = async ({ email, username }: User) => sign({ email, username }, process.env.ACCESS_TOKEN_SECRET!, singInOptions);
+    export const generateJWT = async ({ email, username }: User) => {
+        return sign({ email, username }, process.env.ACCESS_TOKEN_SECRET!, singInOptions);
+    }
 
-    export const hashPassword = async (password: string): Promise<string> => bcrypt.hashSync(password, bcrypt.genSaltSync(12, "a"))
+    export const hashPassword = async (password: string): Promise<string> => {
+        return bcrypt.hashSync(password, bcrypt.genSaltSync(12, "a"))
+    }
 
 
     export const comparePassword = async (newPassword: string, passwordHash: string) => {

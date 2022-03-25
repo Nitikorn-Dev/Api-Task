@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Request, Response } from 'express'
 import { body, check, validationResult } from "express-validator";
 import { User } from "./user.interface";
+
 import UserService from './user.service';
 
 import { Query, Send } from 'express-serve-static-core';
@@ -9,6 +10,9 @@ import { Query, Send } from 'express-serve-static-core';
 export const userRouter = Router();
 
 //Type Request
+interface TypeRequestBody<T> extends Request {
+    body: T
+}
 interface TypeRequest<T, U extends Query> extends Request {
     body: T
     query: U
@@ -21,7 +25,7 @@ interface TypeResponse<ResBody> extends Response {
 //Sign up
 userRouter.post('/create', [
     check('username', 'Username must be at  4 - 20 chars long').isLength({ min: 4, max: 20 }),
-    check('email', 'is not Email').isEmail(),
+    check('email', 'Invalid email').isEmail(),
     check('password', 'Password must be at  4 - 8 chars long').isLength({ min: 4, max: 8 }),
 ], async (req: TypeRequest<User, { id: string }>, res: Response) => {
     const user = req.body;
@@ -45,7 +49,6 @@ userRouter.post('/create', [
 
 // Get all user
 userRouter.get('/', async (req: Request, res: Response) => {
-
     try {
         const data = await UserService.findAll();
         return res.status(200).send(data);
@@ -55,14 +58,29 @@ userRouter.get('/', async (req: Request, res: Response) => {
 })
 
 
-userRouter.get(':id', async (req: TypeRequest<any, { id: string }>, res: TypeResponse<User>) => {
+userRouter.get(':id', async (req: TypeRequest<any, { id: string }>, res: TypeResponse<User>): Promise<User | Object> => {
     try {
         const user = await UserService.findOne(req.query.id);
-        return res.status(200).json({ ...user })
+        return res.status(200).json(user!)
 
     } catch (error) {
-
+        return res.status(400).send({ error })
     }
+})
+
+// Login
+userRouter.post('/login', [
+    check('username', 'Invalid value'),
+    check('password', 'Password must be at  4 - 8 chars long').isLength({ min: 4, max: 8 })
+], async (req: TypeRequestBody<User>, res: Response) => {
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
+    }
+
+
 })
 
 export default userRouter;

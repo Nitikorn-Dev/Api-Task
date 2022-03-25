@@ -3,13 +3,8 @@ import { User } from './user.interface';
 import UserModel from './user.model';
 import AuthService from '../auth/auth.service';
 
-class UserService {
-
-    constructor() {
-
-    }
-
-    async createUser(user: User) {
+namespace UserService {
+    export const createUser = async (user: User) => {
 
         let checkEmail = await findByEmail(user.email)
         if (checkEmail) {
@@ -17,7 +12,7 @@ class UserService {
                 errors: [
                     {
                         email: user.email,
-                        msg: "The user already exists",
+                        msg: "E-mail already in use",
                     },
                 ]
             }
@@ -27,48 +22,33 @@ class UserService {
         await UserModel.create({ ...user, password: passwordHash });
         const token = await AuthService.generateJWT(user);
         return { token, message: "create user Success" };
-    }
-
-
-    async findByEmail() {
 
     }
 
-}
-
-
-const createUser = async (user: User) => {
-
-    let checkEmail = await findByEmail(user.email)
-    if (checkEmail) {
-        return {
-            errors: [
-                {
-                    email: user.email,
-                    msg: "The user already exists",
-                },
-            ]
-        }
+    export const findAll = async (): Promise<User[]> => {
+        return await UserModel.find().exec();
     }
 
-    const passwordHash = await AuthService.hashPassword(user.password!);
-    await UserModel.create({ ...user, password: passwordHash });
-    const token = await AuthService.generateJWT(user);
-    return { token, message: "create user Success" };
+    export const findOne = async (id: number | string) => {
+        return await UserModel.findOne({ id }).select({ username: 1, email: 1 });
+    }
+
+    export const findByEmail = async (email: string): Promise<User | null> => {
+        return await UserModel.findOne({ email })
+    }
+
+
+    export const login = async (user: User) => {
+
+        return findByEmail(user.email).then((user) => {
+
+        })
+    }
 
 }
 
-const findAll = async (): Promise<User[]> => {
-    return await UserModel.find().exec();
-}
-
-const findOne = async (id: number | string): Promise<User> => {
-    return await UserModel.findOne({ id }).select({ username: 1, email: 1 });
-}
-
-const findByEmail = async (email: string) => {
-    return await UserModel.findOne({ email })
-}
-
-
-export default { createUser, findAll };
+export default UserService;
+// module.exports.createUser = createUser;
+// module.exports = findAll;
+// module.exports = { findAll, createUser };
+console.log(module)
