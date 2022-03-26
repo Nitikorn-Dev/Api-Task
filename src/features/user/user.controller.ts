@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Request, Response } from 'express'
-import { body, check, validationResult } from "express-validator";
+import { check, validationResult } from "express-validator";
 import { User } from "./user.interface";
 
 import UserService from './user.service';
@@ -53,7 +53,7 @@ userRouter.get('/', async (req: Request, res: Response) => {
         const data = await UserService.findAll();
         return res.status(200).send(data);
     } catch (error) {
-        throw new Error('could not find users')
+        return res.status(400).json(error)
     }
 })
 
@@ -70,17 +70,52 @@ userRouter.get(':id', async (req: TypeRequest<any, { id: string }>, res: TypeRes
 
 // Login
 userRouter.post('/login', [
-    check('username', 'Invalid value'),
+    check('email', 'Invalid email'),
     check('password', 'Password must be at  4 - 8 chars long').isLength({ min: 4, max: 8 })
 ], async (req: TypeRequestBody<User>, res: Response) => {
-
+    const user = req.body;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
     }
 
+    try {
+        const user = await UserService.login(req.body);
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ error })
+    }
 
+})
+
+
+userRouter.post('/token', async (req: Request, res: Response) => {
+    let refreshToken = req.headers.authorization;
+    if (!refreshToken) {
+        return res.status(401).json({ message: "Token not found" })
+    }
+    if (refreshToken.toLowerCase().startsWith('bearer')) {
+        refreshToken = refreshToken.slice('bearer'.length).trim();
+    }
+
+    try {
+        const user = await UserService.createRefreshJWT(refreshToken);
+        return res.status(200).json(user);
+    } catch (error: any) {
+        if (error.message === "Invalid refresh token") {
+            return res.status(403).json(error.message)
+        } else {
+            return res.status(444).json(error.message)
+        }
+    }
+});
+
+userRouter.delete("/logout", async (req: Request, res: Response) => {
+    const refreshToken = req.body;
+    await UserService.removeRefreshToken(refreshToken);
+    return res.sendStatus(204);
 })
 
 export default userRouter;

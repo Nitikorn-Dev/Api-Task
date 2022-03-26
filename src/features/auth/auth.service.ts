@@ -1,17 +1,26 @@
-import { sign, SignOptions } from 'jsonwebtoken';
+import { sign, SignOptions, verify } from 'jsonwebtoken';
 import bcrypt = require("bcrypt");
 import { User } from '../user/user.interface';
-import dotenv from "dotenv";
-dotenv.config();
+
 
 const singInOptions: SignOptions = {
     algorithm: 'HS256',
-    expiresIn: '1h'
+    // expiresIn: '1h'
 }
 
 namespace AuthService {
-    export const generateJWT = async ({ email, username }: User) => {
-        return sign({ email, username }, process.env.ACCESS_TOKEN_SECRET!, singInOptions);
+
+    export const generateJWT = async ({ email }: User, secret: string, expiresIn: string = '2m') => {
+        return sign({ email }, secret, { ...singInOptions, expiresIn });
+    }
+
+    export const validateJWT = async (token: string, secret: string) => {
+        return verify(token, secret)
+    }
+
+
+    export const hasAccessToEndpoint = async (allowedAccessTypes: string[], user: any[]) => {
+        return allowedAccessTypes.some((at) => user.some((uat) => uat === at))
     }
 
     export const hashPassword = async (password: string): Promise<string> => {

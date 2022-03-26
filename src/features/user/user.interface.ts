@@ -1,8 +1,8 @@
 
-export interface User extends Document {
-    id?: number;
+export interface User {
+    // id?: number;
     // name?: string;
-    username?: string;
+    username: string;
     email: string;
     // role?: UserRole;
     // accessTypes: [
@@ -11,7 +11,7 @@ export interface User extends Document {
     //     'updateTeams',
     //     'deleteTeams'
     //   ]
-    password?: string;
+    password: string;
     // icon?: string;
 }
 

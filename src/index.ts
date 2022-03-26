@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 4000;
 
 connect(dbUrl!)
     .then(() => {
-        console.log('connect MongoDB success')
+        console.log('connect MongoDB success ✅')
     }).catch(() => {
         console.log('cannot connect MongoDB')
     })
@@ -32,7 +32,7 @@ const run = async () => {
     if (dbUrl) {
         try {
             await connect(dbUrl, config)
-            console.log('connenct MongoDB')
+            console.log('%cconnenct MongoDB', 'color:blue')
         } catch (error) {
             console.log('Eror connect MongoDB', error)
         }
@@ -52,4 +52,4 @@ app.get("/", async (req: Request, res: Response): Promise<Response> => {
     return res.send({ message: 'Hellow World' });
 });
 // OBqzX0ShmKjATNhn
-app.listen(PORT, () => console.log(`Server Port ${PORT} runing...`));
+app.listen(PORT, () => console.log(`Server Port ${PORT} runing...✨`));
