@@ -15,33 +15,38 @@ namespace UserService {
 
         let checkEmail = await findByEmail(user.email)
         if (checkEmail) {
-            return {
-                errors: [
-                    {
-                        email: user.email,
-                        msg: "E-mail already in use",
-                    },
-                ]
-            }
+            // return {
+            //     errors: [
+            //         {
+            //             email: user.email,
+            //             msg: "E-mail already in use",
+            //         },
+            //     ]
+            // }
+            throw new Error("E-mail already in use")
         }
 
-        const passwordHash = await AuthService.hashPassword(user.password!);
-        let res = await UserModel.create({ ...user, password: passwordHash });
-        const access_token = await AuthService.generateJWT(user, ACCESS_SECRET);
-        return { access_token, message: "create user Success" };
+        try {
+            const passwordHash = await AuthService.hashPassword(user.password!);
+            await UserModel.create({ ...user, password: passwordHash });
+            const access_token = await AuthService.generateJWT(user, ACCESS_SECRET);
+            return { access_token, message: "create user Success" };
+        } catch (error) {
+            throw new Error("Not able to Sign up user")
+        }
 
     }
 
     export const findAll = async (): Promise<User[]> => {
-        return await UserModel.find().select({ password: 1 }).exec();
+        return await UserModel.find().exec();
     }
 
     export const findOne = async (id: number | string) => {
-        return await UserModel.findOne({ id }).select('+email +password');
+        return await UserModel.findOne({ id }).select('+email +password').exec();
     }
 
     const findByEmail = async (email: string): Promise<User | null> => {
-        return await UserModel.findOne({ email }).select('+password')
+        return await UserModel.findOne({ email }).select('+password').exec()
     }
 
     const validateUser = async (email: string, password: string): Promise<User> => {

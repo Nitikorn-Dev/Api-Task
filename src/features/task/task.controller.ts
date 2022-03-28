@@ -1,4 +1,5 @@
 import { Router } from "express";
+import JwtAuthGuard from "../auth/guards/guard";
 import { TaskStatus } from "./task.interface";
 import TaskService from './task.service';
 const taskRouter = Router();

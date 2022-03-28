@@ -1,1 +1,0 @@
-import { sign, SignOptions } from 'jsonwebtoken';

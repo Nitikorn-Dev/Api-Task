@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { NextFunction, Router } from "express";
 import { Request, Response } from 'express'
 import { check, validationResult } from "express-validator";
 import { User } from "./user.interface";
@@ -27,7 +27,7 @@ userRouter.post('/create', [
     check('username', 'Username must be at  4 - 20 chars long').isLength({ min: 4, max: 20 }),
     check('email', 'Invalid email').isEmail(),
     check('password', 'Password must be at  4 - 8 chars long').isLength({ min: 4, max: 8 }),
-], async (req: TypeRequest<User, { id: string }>, res: Response) => {
+], async (req: TypeRequest<User, { id: string }>, res: Response, next: NextFunction) => {
     const user = req.body;
 
     const errors = validationResult(req);
@@ -37,11 +37,18 @@ userRouter.post('/create', [
     }
 
     try {
+        // UserService.createUser(user).then((newUser) => {
+        //     res.status(200).json(newUser);
+        // }).catch((err: Error) => next(err))
+
         const response = await UserService.createUser(user)
         return res.status(200).send(response)
-    } catch (error) {
-        console.log("Catch Error", error)
-        res.status(400).send(error)
+
+    } catch (error: any) {
+        // console.log(error)
+        // res.status(400).send(error)
+        // next(error)
+        return next(error)
     }
 
 });
