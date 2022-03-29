@@ -11,13 +11,15 @@ export function handleError(
 ) {
     let customError = err;
 
-    logger.error(err + "❌")
+    // logger.error(err.stack + "❌")
     if (!(err instanceof CustomError)) {
-        res.status(500).json(err['message'])
+        console.log("Error")
+        return res.status(500).json(customError.message)
     } else {
-
-        res.status((customError as CustomError).status).send(customError)
+        console.log("CustomError")
+        return res.status((customError as CustomError).status).send(customError)
     }
+    // next(err)
 }
 
 export function logError(
@@ -26,6 +28,6 @@ export function logError(
     res: Response,
     next: NextFunction
 ) {
-    // logger.error("Error")
-    // next(err);
+    logger.error(err.stack)
+    next(err);
 }

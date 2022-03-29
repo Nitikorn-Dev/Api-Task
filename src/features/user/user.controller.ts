@@ -6,6 +6,7 @@ import { User } from "./user.interface";
 import UserService from './user.service';
 
 import { Query, Send } from 'express-serve-static-core';
+import { CustomError } from "../../utils/custom-error/custom-error.model";
 
 export const userRouter = Router();
 
@@ -33,23 +34,21 @@ userRouter.post('/create', [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() })
+        // return res.status(400).json({ errors: errors.array() })
+        // throw new CustomError(errors.array())
+        return next(new CustomError(errors.array()))
+        return;
     }
 
-    try {
-        // UserService.createUser(user).then((newUser) => {
-        //     res.status(200).json(newUser);
-        // }).catch((err: Error) => next(err))
+    // try {
 
-        const response = await UserService.createUser(user)
-        return res.status(200).send(response)
+    //     const response = await UserService.createUser(user)
+    //     return res.status(200).send(response)
 
-    } catch (error: any) {
-        // console.log(error)
-        // res.status(400).send(error)
-        // next(error)
-        return next(error)
-    }
+    // } catch (error: any) {
+
+    //     return next(error)
+    // }
 
 });
 

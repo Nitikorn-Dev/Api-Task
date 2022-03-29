@@ -1,12 +1,11 @@
 import express, { Application, NextFunction, Request, Response, Router } from 'express'
 import router from './features';
 const compression = require('compression');
-import { connect, model, connections, createConnection } from 'mongoose';
+import { connect } from 'mongoose';
 import dotenv from "dotenv"
 
-import TaskModel from './features/task/task.model';
 import { handleError, logError } from './utils/custom-error/error-handler.middleware';
-import { NotFoundException } from './utils/custom-error/custom-error.model';
+import { CustomError, NotFoundException } from './utils/custom-error/custom-error.model';
 
 dotenv.config()
 const dbUrl = process.env.DATABASE;
@@ -48,24 +47,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", router)
 app.use(compression());
-
+console.log('App', process.env.NODE_ENV)
 const router1 = Router();
-app.use("/test", async (req, res, next) => {
-    const err = new Error("nnn")
-    const msg = err.message
-    const name = err.name
-    console.log(err.name)
+app.use("/test", (req, res, next) => {
+    // throw new Error('Something broke! 😱')
+    next(new Error('Something broke! 😱'))
+    // throw new CustomError("Create Error")
+    // throw new NotFoundException()
     try {
         // throw "ff"
-        throw new Error("new Error")
+        // throw new Error('Something broke! 😱')
     } catch (error: any) {
         // console.log(error.message)
         // next(error.message)
         // next(new Error("skdfdjsk"))
-        // console.log(error)
-        next(error)
+        // next(error)
+        // return res.status(400).send(error.message)
     }
-
     console.log('middlewar 1')
 }
     // ,(req, res, next) => {
@@ -94,6 +92,7 @@ app.get("/hellow/:id", (req, res, next) => {
     // next();
     res.send('regular')
 }, (req, res) => res.send({ middlewar: 3 }))
+
 app.get("/hellow/:id", async (req: Request, res: Response): Promise<Response> => {
     //@ts-ignore
     return res.status(200).send({ message: 'Hellow World' });
@@ -101,12 +100,5 @@ app.get("/hellow/:id", async (req: Request, res: Response): Promise<Response> =>
 
 
 app.use("*", (req, res, next) => next(new NotFoundException()))
-app.use(handleError)
-// app.use((
-//     err: TypeError,
-//     req: Request,
-//     res: Response,
-//     next: NextFunction) => {
-//     console.log("handleError", err)
-// })
+app.use(logError, handleError)
 app.listen(PORT, () => console.log(`Server Port ${PORT} runing...✨`));

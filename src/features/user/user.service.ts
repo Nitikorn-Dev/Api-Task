@@ -2,6 +2,7 @@ import { User } from './user.interface';
 import UserModel from './user.model';
 import AuthService from '../auth/auth.service';
 import dotenv from "dotenv";
+import { BadRequestException } from '../../utils/custom-error/custom-error.model';
 dotenv.config();
 
 const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET!;
@@ -15,24 +16,25 @@ namespace UserService {
 
         let checkEmail = await findByEmail(user.email)
         if (checkEmail) {
-            // return {
-            //     errors: [
-            //         {
-            //             email: user.email,
-            //             msg: "E-mail already in use",
-            //         },
-            //     ]
-            // }
-            throw new Error("E-mail already in use")
-        }
+            return {
+                errors: [
+                    {
+                        email: user.email,
+                        msg: "E-mail already in use",
+                    },
+                ]
+            }
+            // throw new BadRequestException("E-mail already in use")
+        } else {
 
-        try {
-            const passwordHash = await AuthService.hashPassword(user.password!);
-            await UserModel.create({ ...user, password: passwordHash });
-            const access_token = await AuthService.generateJWT(user, ACCESS_SECRET);
-            return { access_token, message: "create user Success" };
-        } catch (error) {
-            throw new Error("Not able to Sign up user")
+            try {
+                const passwordHash = await AuthService.hashPassword(user.password!);
+                const { email } = await UserModel.create({ ...user, password: passwordHash });
+                const access_token = await AuthService.generateJWT(user, ACCESS_SECRET);
+                return { access_token, user: { email }, message: "create user Success" };
+            } catch (error) {
+                throw new Error("Not able to Sign up user")
+            }
         }
 
     }
@@ -68,7 +70,7 @@ namespace UserService {
     export const login = async ({ email, password }: Pick<User, "email" | "password">) => {
         const user = await validateUser(email, password);
         const access_token = await AuthService.generateJWT(user, ACCESS_SECRET);
-        const refreshToken = await AuthService.generateJWT(user, REFRESH_SECRET, '5m');
+        const refreshToken = await AuthService.generateJWT(user, REFRESH_SECRET, '10m');
         refreshTokens.push(refreshToken);
         return { access_token, refreshToken }
     }

@@ -20,7 +20,7 @@ export class BaseError extends Error {
         public readonly isOperational: boolean,
     ) {
         super(description);
-        Object.setPrototypeOf(this.description, new.target.prototype);
+        Object.setPrototypeOf(this, new.target.prototype);
         Error.captureStackTrace(this);
     }
 }

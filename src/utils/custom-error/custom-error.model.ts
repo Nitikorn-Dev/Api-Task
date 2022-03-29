@@ -3,18 +3,18 @@ export class CustomError extends Error {
     constructor(
         protected objectOrError: string | Object | any,
         public status: number = 500,
-        protected description: any
+        public description?: any
     ) { 
-        super(description);
-        Object.setPrototypeOf(this.description, new.target.prototype);
-        Error.captureStackTrace(this);
+        super(objectOrError);
+        // Object.setPrototypeOf(this, new.target.prototype);
+        // Error.captureStackTrace(this);
     }
 }
 
 export class BadRequestException extends CustomError {
     constructor(
         protected objectOrError: string | Object = BadRequestException.name,
-        protected description: any = {}
+        public description: any = {}
     ) {
         super(objectOrError, 400, description)
     }
@@ -23,7 +23,7 @@ export class BadRequestException extends CustomError {
 export class UnauthorizedException extends CustomError {
     constructor(
         protected objectOrError: string | Object = UnauthorizedException.name,
-        protected description: any = {}
+        public description: any = {}
     ) {
         super(objectOrError, 401, description)
     }
@@ -32,7 +32,7 @@ export class UnauthorizedException extends CustomError {
 export class ForbiddenException extends CustomError {
     constructor(
         protected objectOrError: string | Object | any = ForbiddenException.name,
-        protected description: any = {}
+        public description: any = {}
     ) {
         super(objectOrError, 403, description)
     }
@@ -41,7 +41,7 @@ export class ForbiddenException extends CustomError {
 export class NotFoundException extends CustomError {
     constructor(
         protected objectOrError: string | Object | any = NotFoundException.name,
-        protected description: any = {}
+        public description: any = {}
     ) {
         super(objectOrError, 404, description)
     }
@@ -49,7 +49,7 @@ export class NotFoundException extends CustomError {
 export class InternalServerErrorException extends CustomError {
     constructor(
         protected objectOrError: string | Object | any = NotFoundException.name,
-        protected description: any = {}
+        public description: any = {}
     ) {
         super(objectOrError, 500, description)
     }
