@@ -5,6 +5,6 @@ import JwtAuthGuard from './auth/guards/guard'
 const router = Router();
 
 router.use('/tasks', JwtAuthGuard, taskRouter)
-router.use('/users', userRouter)
+router.use('/auth', userRouter)
 
 export default router;

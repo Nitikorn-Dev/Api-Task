@@ -2,7 +2,7 @@ import { User } from './user.interface';
 import UserModel from './user.model';
 import AuthService from '../auth/auth.service';
 import dotenv from "dotenv";
-import { BadRequestException } from '../../utils/custom-error/custom-error.model';
+import { BadRequestException, CustomError } from '../../utils/custom-error/custom-error.model';
 dotenv.config();
 
 const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET!;
@@ -70,7 +70,7 @@ namespace UserService {
     export const login = async ({ email, password }: Pick<User, "email" | "password">) => {
         const user = await validateUser(email, password);
         const access_token = await AuthService.generateJWT(user, ACCESS_SECRET);
-        const refreshToken = await AuthService.generateJWT(user, REFRESH_SECRET, '10m');
+        const refreshToken = await AuthService.generateJWT(user, REFRESH_SECRET, '40m');
         refreshTokens.push(refreshToken);
         return { access_token, refreshToken }
     }
@@ -78,7 +78,7 @@ namespace UserService {
     export const createRefreshJWT = async (refreshToken: string) => {
 
         if (!refreshTokens.includes(refreshToken)) {
-            throw new Error("Invalid refresh token");
+            throw new CustomError("Invalid refresh token", 403);
         }
 
         try {

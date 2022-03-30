@@ -6,7 +6,7 @@ import { User } from "./user.interface";
 import UserService from './user.service';
 
 import { Query, Send } from 'express-serve-static-core';
-import { CustomError } from "../../utils/custom-error/custom-error.model";
+import { CustomError, NotFoundException, } from "../../utils/custom-error/custom-error.model";
 
 export const userRouter = Router();
 
@@ -97,10 +97,11 @@ userRouter.post('/login', [
 })
 
 
-userRouter.post('/token', async (req: Request, res: Response) => {
+userRouter.post('/token', async (req: Request, res: Response, next: NextFunction) => {
     let refreshToken = req.headers.authorization;
     if (!refreshToken) {
-        return res.status(401).json({ message: "Token not found" })
+        return next(new CustomError("Token not found", 401))
+        // return res.status(401).json({ message: "Token not found" })
     }
     if (refreshToken.toLowerCase().startsWith('bearer')) {
         refreshToken = refreshToken.slice('bearer'.length).trim();
@@ -110,11 +111,13 @@ userRouter.post('/token', async (req: Request, res: Response) => {
         const user = await UserService.createRefreshJWT(refreshToken);
         return res.status(200).json(user);
     } catch (error: any) {
-        if (error.message === "Invalid refresh token") {
-            return res.status(403).json(error.message)
-        } else {
-            return res.status(444).json(error.message)
-        }
+        next(error)
+        // if (error.message === "Invalid refresh token") {
+        //     return res.status(403).json(error.message)
+        // }
+        // else {
+        //     return res.status(500).json(error.message)
+        // }
     }
 });
 

@@ -1,11 +1,11 @@
 
 export class CustomError extends Error { 
     constructor(
-        protected objectOrError: string | Object | any,
+        protected msg: string | Object | any,
         public status: number = 500,
         public description?: any
     ) { 
-        super(objectOrError);
+        super();
         // Object.setPrototypeOf(this, new.target.prototype);
         // Error.captureStackTrace(this);
     }
@@ -13,45 +13,45 @@ export class CustomError extends Error {
 
 export class BadRequestException extends CustomError {
     constructor(
-        protected objectOrError: string | Object = BadRequestException.name,
+        protected msg: string | Object = BadRequestException.name,
         public description: any = {}
     ) {
-        super(objectOrError, 400, description)
+        super(msg, 400, description)
     }
 }
 
 export class UnauthorizedException extends CustomError {
     constructor(
-        protected objectOrError: string | Object = UnauthorizedException.name,
+        protected msg: string | Object = UnauthorizedException.name,
         public description: any = {}
     ) {
-        super(objectOrError, 401, description)
+        super(msg, 401, description)
     }
 }
 
 export class ForbiddenException extends CustomError {
     constructor(
-        protected objectOrError: string | Object | any = ForbiddenException.name,
+        protected msg: string | Object | any = ForbiddenException.name,
         public description: any = {}
     ) {
-        super(objectOrError, 403, description)
+        super(msg, 403, description)
     }
 }
 
 export class NotFoundException extends CustomError {
     constructor(
-        protected objectOrError: string | Object | any = NotFoundException.name,
+        protected msg: string | Object | any = NotFoundException.name,
         public description: any = {}
     ) {
-        super(objectOrError, 404, description)
+        super(msg, 404, description)
     }
 }
 export class InternalServerErrorException extends CustomError {
     constructor(
-        protected objectOrError: string | Object | any = NotFoundException.name,
+        protected msg: string | Object | any = NotFoundException.name,
         public description: any = {}
     ) {
-        super(objectOrError, 500, description)
+        super(msg, 500, description)
     }
 }
 
