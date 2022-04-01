@@ -4,42 +4,41 @@ import TaskModel from './task.model';
 import { Task, TaskStatus } from './task.interface';
 
 import dotenv from "dotenv"
+import { CustomError } from '../../utils/custom-error/custom-error.model';
+import { User } from '../user/user.interface';
 const dbUrl = process.env.DATABASE;
 
-const config = {
-    autoIndex: true,
-    useNewUrlParser: true,
-}
 
-const connectMogoDB = async () => {
-    if (dbUrl) {
-        try {
-            await connect(dbUrl, config)
-            console.log('connenct MongoDB')
-        } catch (error) {
-            console.log('Eror connect MongoDB', error)
-        }
-    }
-}
 
 namespace TaskService {
-    export const findTask = async (query: Task) => {
-        // connectMogoDB();
-        try {
-            return await TaskModel.findOne({ ...query });
-        } catch (error) {
-            console.log(error)
-            throw new Error('Could not find Task')
+
+
+    export const createTask = async (user: User & { _id: any }, task: Task) => {
+
+        const title = await findTask({ createdBy: user._id })
+        if (title) {
+            throw new CustomError("Title already in use")
         }
+
+        try {
+            return await TaskModel.create(task);
+        } catch (error) {
+            throw new CustomError("Not able to save task", 400)
+        }
+    }
+
+    // export const updateTask = (task: Task) => {
+    //     return await TaskModel.updateOne({ _id: task.id })
+    // }
+
+
+
+    export const findTask = async (task: Task): Promise<Task | null> => {
+        return await TaskModel.findOne({ ...task });
     }
 
     export const findTaskAll = async () => {
-        // connectMogoDB();
-        try {
-            return await TaskModel.find();
-        } catch (error) {
-            throw new Error('Could not find TaskAll');
-        }
+        return await TaskModel.find();
     }
 }
 

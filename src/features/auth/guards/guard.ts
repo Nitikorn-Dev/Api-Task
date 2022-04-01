@@ -15,7 +15,8 @@ const JwtAuthGuard = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     try {
-        await AuthService.validateJWT(token!, ACCESS_TOKEN_SECRET) as User;
+        const user = await AuthService.validateJWT(token!, ACCESS_TOKEN_SECRET) as User;
+        req.user = user;
         next();
     } catch (error: any) {
         next(new ForbiddenException("Invalid token, You are unauthorised"))

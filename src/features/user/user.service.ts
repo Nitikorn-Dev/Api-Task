@@ -69,8 +69,8 @@ namespace UserService {
 
     export const login = async ({ email, password }: Pick<User, "email" | "password">) => {
         const user = await validateUser(email, password);
-        const access_token = await AuthService.generateJWT(user, ACCESS_SECRET);
-        const refreshToken = await AuthService.generateJWT(user, REFRESH_SECRET, '4m');
+        const access_token = await AuthService.generateJWT(user, ACCESS_SECRET, '10m');
+        const refreshToken = await AuthService.generateJWT(user, REFRESH_SECRET, '30m');
         refreshTokens.push(refreshToken);
         return { access_token, refreshToken }
     }
