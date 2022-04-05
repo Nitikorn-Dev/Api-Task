@@ -62,6 +62,7 @@ taskRouter.put('/:id'
 
 //GET
 taskRouter.get('/', cache(10), async (req, res, next) => {
+    console.log("get All", req.body.user)
     try {
         return res.status(200).send(await TaskService.findTaskAll());
     } catch (error) {

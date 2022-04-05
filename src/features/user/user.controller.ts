@@ -37,7 +37,6 @@ userRouter.post('/create', [
         // return res.status(400).json({ errors: errors.array() })
         // throw new CustomError(errors.array())
         return next(new CustomError(errors.array()))
-        return;
     }
 
     // try {
@@ -78,7 +77,7 @@ userRouter.get(':id', async (req: TypeRequest<any, { id: string }>, res: TypeRes
 userRouter.post('/login', [
     check('email', 'Invalid email'),
     check('password', 'Password must be at  4 - 8 chars long').isLength({ min: 4, max: 8 })
-], async (req: TypeRequestBody<User>, res: Response) => {
+], async (req: TypeRequestBody<User>, res: Response, next: NextFunction) => {
     const user = req.body;
     const errors = validationResult(req);
 
@@ -90,8 +89,7 @@ userRouter.post('/login', [
         const user = await UserService.login(req.body);
         return res.status(200).json(user);
     } catch (error) {
-        console.log(error)
-        return res.status(400).json({ error })
+        return next(error)
     }
 
 })

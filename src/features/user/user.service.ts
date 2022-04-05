@@ -51,7 +51,7 @@ namespace UserService {
         return await UserModel.findOne({ email }).select('+password').exec()
     }
 
-    const validateUser = async (email: string, password: string): Promise<User> => {
+    const validateUser = async (email: string, password: string): Promise<User | any> => {
         const user = await findByEmail(email)
         if (user === null) {
             throw new Error('Could not find Email')

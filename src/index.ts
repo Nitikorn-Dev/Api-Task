@@ -7,6 +7,8 @@ import dotenv from "dotenv"
 import { handleError, logError } from './utils/custom-error/error-handler.middleware';
 import { CustomError, NotFoundException } from './utils/custom-error/custom-error.model';
 
+import routerApi1 from './features/api1/routers';
+
 dotenv.config()
 const dbUrl = process.env.DATABASE;
 
@@ -46,6 +48,9 @@ const run = async () => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", router)
+
+app.use("/api1", routerApi1)
+
 app.use(compression());
 console.log('App', process.env.NODE_ENV)
 const router1 = Router();

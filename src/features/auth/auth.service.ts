@@ -8,10 +8,14 @@ const singInOptions: SignOptions = {
     // expiresIn: '1h'
 }
 
+type Optional<T> = {
+    [P in keyof T]?: T[P]
+}
 namespace AuthService {
 
-    export const generateJWT = async ({ email }: User, secret: string, expiresIn: string = '2m') => {
-        return sign({ email }, secret, { ...singInOptions, expiresIn });
+    export const generateJWT = async ({ email, username, _id }: Optional<User & { _id: any }>, secret: string, expiresIn: string = '2m') => {
+        console.log(_id)
+        return sign({ email, username, _id }, secret, { ...singInOptions, expiresIn });
     }
 
     export const validateJWT = async (token: string, secret: string) => {
