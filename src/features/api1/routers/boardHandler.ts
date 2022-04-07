@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, Router } from 'express';
 import ModelBoard, { Board } from '../models/board';
+import ModelCard from '../models/card';
 import ModelList from '../models/list';
 import auth from '../middleware';
 import { User } from '../models/user';
@@ -46,10 +47,11 @@ boardRouter.post('/', auth, [
 boardRouter.get('/:id/lists', auth,
     async (req: TypeRequestBody<{ user: User }>, res, next) => {
         const { user } = req.body;
-        const _id = req.params._id
-        console.log(user, _id);
+        const _id = req.params.id;
+        console.log(user, req.params.id);
         try {
             const board = await ModelBoard.findOne({ _id, userId: user.id })
+            console.log(board)
             if (!board)
                 return res.status(404).send()
             const lists = await ModelList.find({ boardId: _id })
@@ -57,6 +59,21 @@ boardRouter.get('/:id/lists', auth,
         } catch (error) {
             next(error)
         }
-    })
+    });
+
+// get cards based on boardId
+boardRouter.get('/:id/cards', auth, async (req: TypeRequestBody<{ user: User }>, res, next) => {
+    const { user } = req.body;
+    const _id = req.params.id
+    try {
+        const board = await ModelBoard.findOne({ _id, userId: user.id })
+        if (!board)
+            return res.status(404).send()
+        const cards = await ModelCard.find({ boardId: _id })
+        res.send(cards)
+    } catch (error) {
+        next(error)
+    }
+})
 
 export default boardRouter;
