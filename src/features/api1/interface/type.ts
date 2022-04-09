@@ -1,11 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import { Query, Send } from 'express-serve-static-core';
+import { User } from '../models/user';
 
-export interface TypeRequestBody<T> extends Request {
+export interface TypeRequestBody<T> extends Request, Auth {
     body: T
 }
 
-export interface TypeRequest<T, U extends Query> extends Request {
-    body: T
-    query: U
+export interface Auth {
+    user?: any
+}
+export interface TypeRequest<T extends Query, U> extends Request, Auth {
+    query: T
+    body: U
+}
+
+export interface CustomRequest<B, Q extends Query> extends Request, Auth {
+    query: Q;
+    body: B;
+}
+
+export interface TypeResponse<T> extends Response {
+    json: Send<T, this>
 }

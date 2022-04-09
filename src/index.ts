@@ -3,7 +3,7 @@ import router from './features';
 const compression = require('compression');
 import { connect } from 'mongoose';
 import dotenv from "dotenv"
-
+const cors = require('cors')
 import { handleError, logError } from './utils/custom-error/error-handler.middleware';
 import { CustomError, NotFoundException } from './utils/custom-error/custom-error.model';
 
@@ -44,7 +44,9 @@ const run = async () => {
 
 // run();
 
-
+app.use(cors({
+    origin: 'http://localhost:3001'
+}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", router)

@@ -4,7 +4,7 @@ import { BadRequestException } from '../../../utils/custom-error/custom-error.mo
 import ModelUser, { User } from '../models/user';
 import { sign, SignOptions, verify } from 'jsonwebtoken';
 import bcrypt = require("bcrypt");
-import auth from '../middleware';
+import UseGuard from '../middleware';
 
 const userRouter = Router();
 
@@ -99,7 +99,7 @@ interface TypeRequestBody<T> extends Request {
     body: T
 }
 
-userRouter.get('/', auth, async (req: TypeRequestBody<{ user: User }>, res: Response, next: NextFunction) => {
+userRouter.get('/', UseGuard.auth, async (req: TypeRequestBody<{ user: User }>, res: Response, next: NextFunction) => {
     const { user } = req.body;
     try {
         const user = await ModelUser.findById(req.body.user)
