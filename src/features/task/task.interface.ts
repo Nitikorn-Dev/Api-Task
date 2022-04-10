@@ -1,4 +1,5 @@
-import { Types } from 'mongoose';
+
+import { Types, Document } from 'mongoose';
 
 export enum TaskStatus {
     TODO = "TODO",
@@ -9,7 +10,7 @@ export enum TaskStatus {
 export interface Task {
     title?: string;
     description?: string;
-    status?: TaskStatus;
+    lists: [Types.ObjectId];
     comments?: Types.ObjectId;
     createdBy?: Types.ObjectId;
 

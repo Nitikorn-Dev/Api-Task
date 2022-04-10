@@ -12,20 +12,24 @@ const taskSchema = new Schema<Task>({
         type: String,
         default: ""
     },
-    status: {
-        type: String,
-        enum: TaskStatus,
-        default: TaskStatus.TODO
-    },
     comments: {
         type: [Schema.Types.ObjectId],
         ref: "Comment"
     },
+    lists: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "list",
+            required: true
+        }
+    ],
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: "User"
     }
-});
+},
+    { timestamps: true }
+);
 
 export default model<Task>('Task', taskSchema);
 
