@@ -1,5 +1,3 @@
-
-import { connect, Schema, model, Document, HydratedDocument, Types } from 'mongoose';
 import TaskModel from './task.model';
 import { Task, TaskStatus } from './task.interface';
 
@@ -13,12 +11,7 @@ const dbUrl = process.env.DATABASE;
 namespace TaskService {
 
 
-    export const createTask = async (user: User & { _id: any }, task: Task) => {
-
-        const title = await findTask({ createdBy: user._id })
-        if (title) {
-            throw new CustomError("Title already in use")
-        }
+    export const createTask = async (task: Task) => {
 
         try {
             return await TaskModel.create(task);
