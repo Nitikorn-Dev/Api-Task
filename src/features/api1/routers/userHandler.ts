@@ -9,7 +9,7 @@ import UseGuard from '../middleware';
 const userRouter = Router();
 
 userRouter.post('/register', [
-    check('username', 'Username must be at  4 - 8 chars long'),
+    check('username', 'Username must be at  4 - 8 chars long').isLength({ min: 4 }),
     check('password', 'Password is too small, try harder').isLength({ min: 4 }),
     check('passwordCheck', 'Password is too small, try harder').custom((value, { req }) => {
         if (value !== req.body.password) {
